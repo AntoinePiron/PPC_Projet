@@ -15,7 +15,11 @@ On place une cloche au milieu des joueurs.
 Les joueurs peuvent alors échanger de 1 à 3 cartes identiques en annonçant le nombre de cartes souhaités. Le joueur échange alors ses cartes avec le premier adversaire qui accepte et le jeu continue jusqu'à ce qu'un joueur réunisse 5 cartes identiques et sonne la cloche. Il gagne alors de nombre de points asociés au moyen de transport réuni.
 
 ## Contraintes techniques
-Le jeu doit contenir 3 processus :  <br/>
+Le jeu doit contenir 3 types de processus :  <br/>
  - Le processus principal
  - Le processus "jeu" &rarr; traque la session de jeu, les offres et la cloche.
- - Le processus "joueur" &rarr; processus intéragissant avec l'utilisateurs, traque ses cartes et les offres. Les interations avec le processus "jeu" sont traités dans un thread séparé.
+ - Le processus "joueur" &rarr; processus intéragissant avec l'utilisateurs, traque ses cartes et les offres. Les interations avec le processus "jeu" sont traités dans un thread séparé. <br/>
+
+Au niveau de la communication inter-processus les offres doivent être stockés dans de la __mémoire partagée__ alors que la communication entre les joueurs doit s'effectueur par un __message queue__
+
+## Notre réflexion sur nos choix d'implémentation
