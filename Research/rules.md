@@ -21,5 +21,3 @@ Le jeu doit contenir 3 types de processus :  <br/>
  - Le processus "joueur" &rarr; processus intéragissant avec l'utilisateurs, traque ses cartes et les offres. Les interations avec le processus "jeu" sont traités dans un thread séparé. <br/>
 
 Au niveau de la communication inter-processus les offres doivent être stockés dans de la __mémoire partagée__ alors que la communication entre les joueurs doit s'effectueur par un __message queue__
-
-## Notre réflexion sur nos choix d'implémentation
