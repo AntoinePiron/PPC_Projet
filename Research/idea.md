@@ -7,6 +7,8 @@ Le client va lui correspondre au processus joueur qui va interragir avec le serv
 
 ## Déroulement d'une interraction client-serveur 
 Au début de multiples clients se connectent à notre serveur. Ces derniers se voit proposés différents ID de parties et choisissent de se connecter à l'une d'entre-elle. Côté serveur, chaque client sera identifié par un unique ID également afin de pouvoir interragir facilement avec lui.  On pourra imaginer par exemple un dictionnaire avec pour clé les IDs clients (uniques et généré automatiquement lors d'une connection) <br/>
-Une fois connecté le client est en attente du début de partie qui peut-être déclenché de 2 manières différentes : <br/>
+Une fois connecté le client est en attente du début de partie qui peut-être déclenché de 2 manières différentes : 
  - Un client demande un début de partie, tous les joueurs reçoivent une demande de confirmation pour lancer celle- ci et si tous le monde confirme la partie démarre.
- - Au bout d'un certains *time out* et d'un nombre minimal de joueur (3) une proposition automatique de début de partie est envoyée.
+ - Au bout d'un certains *time out* et d'un nombre minimal de joueur (3) une proposition automatique de début de partie est envoyée. <br/>
+
+La partie se déroule alors comme prévu dans les règles. Une fois la partie finie on demande à chaque participant s'il veut rejouer. Si oui on le renvoie dans la selection des parties, sinon on ferme sa connection (on pourra éventuellement lui renvoyer ses statistiques : nombres de parties, nombres de victoires).
