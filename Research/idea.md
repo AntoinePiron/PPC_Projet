@@ -1,4 +1,5 @@
-# Notre choix d'implémentation
+# Projet Cambiecolo | Rendu du 17/12/2021
+*Groupe projet : Tristan Devin et Antoine Piron 3TC2*
 
 ## Conception générale 
 Pour la réalisation de ce projet nous avons décidé de partir sur un système implémentant un programme *__serveur__* et un programme *__client__*.  <br/>
