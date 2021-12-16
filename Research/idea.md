@@ -12,3 +12,31 @@ Une fois connecté le client est en attente du début de partie qui peut-être d
  - Au bout d'un certains *time out* et d'un nombre minimal de joueur (3) une proposition automatique de début de partie est envoyée. <br/>
 
 La partie se déroule alors comme prévu dans les règles. Une fois la partie finie on demande à chaque participant s'il veut rejouer. Si oui on le renvoie dans la selection des parties, sinon on ferme sa connection (on pourra éventuellement lui renvoyer ses statistiques : nombres de parties, nombres de victoires).
+
+## Implémentations des différents éléments qui permettent le bon déroulement de la partie
+Tout d'abord nous allons profiter de l'aspect POO de python. <br/>
+Effectivement nous allons pouvoir créer un classe qui gère la main de chaque joueur avec le type et le nombre de carte. On pourra l'imaginer de la sorte : 
+```python
+import enum 
+
+class cardType(enum.Enum):
+    airplane = 1
+    car = 2
+    train = 3
+    bike = 4
+    shoes = 5
+
+class Hand:
+    #De base on a une main vide
+    myHand = [0,0,0,0,0]
+    
+    def __init__(self, hand):
+        self.myHand = hand
+    
+    def __str__(self):
+        outstr = ""
+        for i in range(self.myHand):
+            outStr += "Carte %s : %s | "%(i, Animal(self.myHand[i]).name)
+        return(outstr)
+```
+Il s'agit simplement d'un exemple montrant l'enum pour les cartes et comment la main serais affiché dans la console. 
