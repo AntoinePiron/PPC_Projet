@@ -51,6 +51,6 @@ De plus l'imposition de l'utilisation de la *shared memory* pour les offres cour
 L'implémentation de notre programme va se dérouler en plusieurs étapes :  <br/>
 1. Création d'un programme client et d'un programme serveur.
 2. Création des assignations auto d'identifiants pour chaque connexion et rangement dans un dictionnaire.
-3. Création de "l'enveloppe" du processus jeux &rarr; il va simplement s'agir de lancer un processus qui ne communique qu'avec un certains nombre restreint de client assigné à cette partie.
+3. Création de "l'enveloppe" du processus jeux &rarr; il va simplement s'agir de lancer un processus qui ne communique qu'avec un certains nombre restreint de clients assignés à cette partie.
 4. Création de la couche de communication inter-processus. Il s'agit de l'interraction entre les joueurs mais également entre les joueurs et le serveur.
 5. Finalement on ajoutera les règles du Cambiecolo pour pouvoir jouer une partie !
