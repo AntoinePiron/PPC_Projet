@@ -14,10 +14,10 @@ class Hand:
     def __init__(self, hand):
         self.myHand = hand
     
-    def __str__(self) -> str:
+    def __str__(self):
         outstr = ""
         for i in range(len(self.myHand)):
-            outstr += "Carte %s : %s | "%(i, cardType(self.myHand[i].name))
+            outstr += "Carte %s : %s | "%(i+1, cardType(self.myHand[i]).name)
         return outstr
 
 
