@@ -1,6 +1,7 @@
 #Ce fichier contient tous les outils qui permettent de jouer mais qui ne sont pas nécessaire
 #dans le prog principal, le but étant de l'alléger pour mieux comprendre
 import enum
+import random
 
 class cardType(enum.Enum):
     airplane = 1
@@ -23,3 +24,17 @@ class Hand:
         for i in range(len(self.myHand)):
             outstr += "Carte %s : %s | "%(i+1, cardType(self.myHand[i]).name)
         return outstr
+
+def generateHands(numberOfPlayers):
+    numberOfCards = numberOfPlayers * 5
+    cards = []
+    while len(cards) < numberOfCards :
+        newCard = int(random.randint(1,numberOfPlayers))
+        if cards.count(newCard) == 5: #Si la carte est déjà présente 5 fois dans la génération 
+            continue
+        else:
+            cards.append(newCard)
+    hands = []
+    for i in range(0, len(cards), 5):
+        hands.append(Hand(cards[i:i+5]))
+    return hands
