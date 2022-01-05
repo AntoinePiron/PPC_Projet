@@ -25,3 +25,5 @@ if __name__ == "__main__":
                 playerNumber = True
         except:
             print("Please enter a valid number.")
+    playerHands = generateHands(playerNumber)
+    
