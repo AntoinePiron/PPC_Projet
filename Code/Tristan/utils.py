@@ -19,5 +19,15 @@ class Hand:
             outstr += "Carte %s : %s | "%(i+1, cardType(self.myHand[i]).name)
         return outstr
     
-class Player(Cards, name):
-    PlayerHand = Hand[]
+class Player():
+    PlayerHand = Hand([0,0,0,0,0])
+    name = ""
+    
+    
+    def __init__(self, hand, Id):
+        self.PlayerHand = hand
+        self.name = Id
+        
+    def __str__(self):
+       print("Player : " + self.name)
+       print("Hand is " +   self.PlayerHand)
