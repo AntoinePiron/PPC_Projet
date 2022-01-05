@@ -1,4 +1,3 @@
-import multiprocessing
 import enum
 
 class cardType(enum.Enum):
@@ -19,8 +18,3 @@ class Hand:
         for i in range(len(self.myHand)):
             outstr += "Carte %s : %s | "%(i+1, cardType(self.myHand[i]).name)
         return outstr
-
-
-if __name__ == "__main__":
-    testHand = Hand([1,2,3,4,5])
-    print(testHand)
