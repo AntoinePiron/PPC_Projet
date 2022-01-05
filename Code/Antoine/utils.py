@@ -1,3 +1,5 @@
+#Ce fichier contient tous les outils qui permettent de jouer mais qui ne sont pas nécessaire
+#dans le prog principal, le but étant de l'alléger pour mieux comprendre
 import enum
 
 class cardType(enum.Enum):
@@ -11,6 +13,9 @@ class Hand:
     myHand = [0,0,0,0,0]
 
     def __init__(self, hand):
+        self.myHand = hand
+
+    def newHand(self, hand):
         self.myHand = hand
     
     def __str__(self):

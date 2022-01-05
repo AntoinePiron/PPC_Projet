@@ -14,5 +14,16 @@ class Game(Process):
         pass
 
 if __name__ == "__main__":
-    handTest = Hand([1,2,3,4,5])
-    print(handTest)
+    print("Welcome to the Cambiecolo card game !")
+    playerNumber = False
+    numberOfPlayers = 0
+    while not playerNumber:
+        print("How many player will play ?")
+        try:
+            numberOfPlayers = int(input("(3-5 players) : "))
+            if numberOfPlayers < 3 or numberOfPlayers > 5 :
+                print("Please enter a valid number.")
+            else:
+                playerNumber = True
+        except:
+            print("Please enter a valid number.")
