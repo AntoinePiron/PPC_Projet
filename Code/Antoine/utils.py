@@ -25,6 +25,14 @@ class Hand:
             outstr += "Carte %s : %s | "%(i+1, cardType(self.myHand[i]).name)
         return outstr
 
+class Offers: 
+    playerID = ""
+    numberOfcards = 0
+
+    def __init__(self, ID, num):
+        self.playerID = ID
+        self.numberOfcards = num
+
 def generateHands(numberOfPlayers):
     numberOfCards = numberOfPlayers * 5
     cards = []

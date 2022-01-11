@@ -1,36 +1,44 @@
-import sys
-import multiprocessing
 from multiprocessing import Process
-from random import random
-from utils import Player, Hand
+from utils import *
 
-numberOfProcesses = int(input('Please enter number of player : ') )
-PlayerArray = []
+#Le processus qui symbolise le joueur
+class Player(Process):
+    hand = Hand([0,0,0,0,0])
 
-def GameStart(p_in):
-    for _ in range(numberOfProcesses):
-        player = Player(  Hand([1,2,3,4,5]) , str(_) )
-        PlayerArray.append(player)
+    def __init__(self, hand):
+        super().__init__()
+        self.hand = hand
+
+    def run(self):
+        print("Player process started")
+        print("Player hand : " + self.hand.__str__())
+
         
-        with p_in.get_lock():
-            p_in.value += 1
-                
 
-                
+#Le processus qui se chargera de la partie 
+class Game(Process):
+
+    def run(self):
+        while True:
+            pass
+
 if __name__ == "__main__":
+    print("Welcome to the Cambiecolo card game !")
+    numberOfPlayers = 0
+    while True:
+        print("How many player will play ?")
+        try:
+            numberOfPlayers = int(input("(3-5 players) : "))
+            if numberOfPlayers < 3 or numberOfPlayers > 5 :
+                print("Please enter a valid number.")
+            else:
+                break
+        except:
+            print("Please enter a valid number.")
     
-    
-    p_in = multiprocessing.Value('i', 0, lock=True)
-    processes = []
-    for i in range(numberOfProcesses):
-        processes.append(Process(target=GameStart, args=(p_in)))
-    
-    for p in processes:
-        p.start()
-    
-    for p in processes:
-        p.join()
+    playerHands = generateHands(numberOfPlayers)
+    playerProcesses = []
+    for h in playerHands:
+        playerProcesses.append(Player(h))
 
-    with p_in.get_lock():
-        for _ in range(numberOfProcesses):
-            print(PlayerArray)
+    
