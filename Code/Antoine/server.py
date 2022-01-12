@@ -1,6 +1,20 @@
 from multiprocessing import shared_memory
+import time
+from utils import *
+import os
 
 if __name__ == "__main__":
-    currentOffers = shared_memory.ShareableList([])
+    pid = os.getpid()
+    print("main pid : ", pid)
+    currentOffers = shared_memory.ShareableList(["0;0","0;0","0;0"], name="currentOffers")
+    print(list(currentOffers))
+    time.sleep(5)
+    print(list(currentOffers))
+    time.sleep(5)
+    print(list(currentOffers))
+    while True: 
+        pass
+
+
 
     
