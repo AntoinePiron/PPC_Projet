@@ -8,15 +8,11 @@ mq = sysv_ipc.MessageQueue(key, sysv_ipc.IPC_CREAT)
 pid = []
 
 while True:
+    print(pid)
     message, t = mq.receive()
     value = message.decode()
-    time.sleep(5)
-    print(pid)
-    for a in pid:
-        if (mq.receive == a):
-            mq.send("We already have your pid !")
-        else:
-            mq.send("Your pid has been received, you are in this game")
-            pid.append(message)
+    print(value)
+    if not (pid.count(value) > 1):
+        pid.append(value)
     
     
