@@ -13,7 +13,7 @@ mq = sysv_ipc.MessageQueue(key)
 
 def debut(nbjoueur):
     time.sleep(2)
-    print("In the game, there are currently " + nbjoueur + " players")
+    print("In the game, there are currently %s players"%(nbjoueur))
     if nbjoueur < 3:
         while True:
             print("You will now wait until there are at least 3 players")
@@ -44,7 +44,7 @@ if __name__ == "__main__":
             md.send(pid, 1)
             nbjoueur, t = md.receive()
             value = nbjoueur.decode()
-            debut(value)
+            debut(int(value))
         else:
             exit(1)
 
