@@ -5,11 +5,8 @@ import time
 
 
 ListePid = []
-key = 128
 debutkey = 100
 
-md = sysv_ipc.MessageQueue(debutkey, sysv_ipc.IPC_CREAT)
-md.remove()
 #Cette création ne sert à rien, elle est simplement là pour vider la message queue du début pour éviter les problèmes, c'est temporaire
 def debutjeu():
     print(ListePid)
@@ -26,11 +23,20 @@ def debutjeu():
             md.send(str(len(ListePid)).encode(), type = 1)
     print("We have 3 players !")
     print("We will now wait for every player to accept the start of the game")
-    
-    
+    greenflag = 0
+    while (greenflag < len(ListePid)):
+        value, t = md.receive(type = 2)
+        flag = int(value.decode())
+        greenflag = flag + greenflag
+        print(greenflag)
+    print("Starting message queue deleted, game starting")
+    md.remove()
+    game()
         
         
-    
+def game():
+    while True:
+        pass    
 
 
 if __name__ == "__main__":
