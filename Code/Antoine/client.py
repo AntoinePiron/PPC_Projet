@@ -10,6 +10,7 @@ pid = 0
 def updateOffers(numberOfCards, shm):
     shm[playerID-1] = pid.__str__() + ";" + numberOfCards.__str__()
 
+
 if __name__ == "__main__":
     currentOffers = shared_memory.ShareableList(name="currentOffers")
     pid = os.getpid()
