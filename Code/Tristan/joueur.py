@@ -23,6 +23,11 @@ def wait(value):
             print("New connection detected")
             print("There are now " + str(value) + " players connected")
     print("There are enough players to start the game")
+    print("Sending a acceptation message")
+    
+    md.send(str(1).encode(),type = 2)
+    
+    print("Starting game")
     game()
                      
 
@@ -46,7 +51,7 @@ if __name__ == "__main__":
         exit(1)
             
     if type == 1:
-        md.send(str(os.getpid()).encode(), 0)
+        md.send(str(os.getpid()).encode(), type = 0)
         nbjoueur, t = md.receive(type = 1)
         value = int(nbjoueur.decode())
         wait(value)
