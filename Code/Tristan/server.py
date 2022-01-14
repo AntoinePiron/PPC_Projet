@@ -1,13 +1,15 @@
 from socket import timeout
 import sysv_ipc
-import time
-
+import time; import multiprocessing
+from multiprocessing import shared_memory
+import os
 
 
 ListePid = []
 key = 128   # Declaration of the key for the message queues
 debutkey = 100 #Could be passed to console args ?
 
+mq = sysv_ipc.MessageQueue(key, sysv_ipc.IPC_CREAT) #Creating main message queue
 
 def debutjeu():
     print("Server has been launched, waiting for connections")
@@ -40,9 +42,23 @@ def debutjeu():
         
         #Fonction game, placeholder for now
 def game():
-    while True:
-        pass    
+    Antoine()
 
+#Fonction qui bah est ton code pelo mdr
+def Antoine():
+    pid = os.getpid()
+    print("main pid : ", pid)
+    
+    
+    currentOffers = shared_memory.ShareableList(["0;0","0;0","0;0"], name="currentOffers")
+    for p in ListePid: #We send enough messages for everyone
+        mq.send(str(1).encode(), type = 1) #This is so that  players wait for this message before trying to access the shared memory
+        #Else we get an error
+    
+    print(list(currentOffers))
+    while True: 
+        time.sleep(5)
+        print(list(currentOffers))
 
 if __name__ == "__main__":
     
