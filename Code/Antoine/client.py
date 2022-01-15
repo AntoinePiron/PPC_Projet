@@ -1,7 +1,6 @@
 from multiprocessing.process import current_process
 import os
 from multiprocessing import shared_memory
-import time
 from utils import *
 
 playerID = 0
@@ -44,4 +43,8 @@ if __name__ == "__main__":
                 except:
                     print("Please enter a valid number.")
         else:
-            time.sleep(5)
+            break
+    
+    currentOffers.shm.unlink()
+
+
