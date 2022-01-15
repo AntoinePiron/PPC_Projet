@@ -12,11 +12,7 @@ pid = 0
 
 key = 128 # Declaration of the key for the message queues
 debutkey = 100 #Could be passed to console args ?
-
-Pid = os.getpid
-
-def updateOffers(numberOfCards, shm):
-    shm[playerID-1] = pid.__str__() + ";" + numberOfCards.__str__()
+semKey = 256
 
 #Fonction self-explainatory, waits for enough ppl to join the game
 def wait(value, md):
@@ -35,13 +31,12 @@ def wait(value, md):
     print("Sending a acceptation message")
     
     md.send(str(1).encode(),type = 3)   #Sends a type 3 message, to ack the start of the game
-    
     print("Starting game")
     game()
                      
 #Fonction game, placeholder for now
 def game():
-    Antoine()
+    TrackingCurrentOffers()
     
     
     #Handle the joining the server, and sending the process' pid
@@ -73,13 +68,9 @@ def joinserver(pid):
         exit(1)
 
 #Fonction qui bah est ton code pelo mdr
-def Antoine():
-    mq = sysv_ipc.MessageQueue(key) #Joins the main message queue
-    
-    memorycreated, t = mq.receive(type = 1) #Waits for an ack that the shared memory has been created
-    created = memorycreated.decode()
-    
+def TrackingCurrentOffers():
     currentOffers = shared_memory.ShareableList(name="currentOffers")
+    offersSemaphore = sysv_ipc.Semaphore(semKey)
     pid = os.getpid()
     while True:
         try:
@@ -89,7 +80,9 @@ def Antoine():
                 continue
             else:
                 if currentOffers[playerID-1] == "0;0":
+                    offersSemaphore.acquire()
                     currentOffers[playerID-1] = pid.__str__() + ";0"
+                    offersSemaphore.release()
                     break
                 else:
                     print("Player number already attributed")
@@ -107,14 +100,23 @@ def Antoine():
                         print("Please enter a valid number : [1,5]")
                         continue
                     else:
-                        updateOffers(cards, currentOffers)
+                        offersSemaphore.acquire()
+                        currentOffers[playerID-1] = pid.__str__() + ";" + cards.__str__()
+                        offersSemaphore.release()
                         break
                 except:
                     print("Please enter a valid number.")
+        elif answer == "n":
+            print("leaving offers")
+            break
         else:
-            time.sleep(5)
+            print("invalid input")
+            continue
+    #En attendant la suite
+    while True:
+        pass
 
 if __name__ == "__main__":
-    joinserver(Pid)
+    joinserver(os.getpid())
     
   

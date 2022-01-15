@@ -8,8 +8,10 @@ ListePid = []
 key = 128   # Declaration of the key for the message queues
 debutkey = 100 #Could be passed to console args ?
 
+#Shared Memory used to track current offrers 
 currentOffers = shared_memory.ShareableList(["0;0","0;0","0;0"], name="currentOffers")
 semKey = 256
+#A semaphore used to protect the sharedMemory
 offersSemaphore = sysv_ipc.Semaphore(256, sysv_ipc.IPC_CREAT, initial_value = 1)
 
 mq = sysv_ipc.MessageQueue(key, sysv_ipc.IPC_CREAT) #Creating main message queue
@@ -20,8 +22,7 @@ def clearStart():
     md.remove()
 
 def debutjeu():
-    print("Server has been launched, waiting for connections")
-    
+    print("Server has been launched, waiting for connections") 
     md = sysv_ipc.MessageQueue(debutkey, sysv_ipc.IPC_CREAT) #Creating debut message queue
     #While there are less than 3 connection, wait for connection type messages
     while (len(ListePid) < 3):
@@ -50,13 +51,9 @@ def debutjeu():
         
 #Fonction game, placeholder for now
 def game():
-    Antoine()
+    TrackingCurrentOffers()
 
-#Fonction qui bah est ton code pelo mdr
-def Antoine():
-    for _ in ListePid: #We send enough messages for everyone
-        mq.send(str(1).encode(), type = 1) #This is so that  players wait for this message before trying to access the shared memory
-
+def TrackingCurrentOffers():
     while True: 
         time.sleep(5)
         print(list(currentOffers))
