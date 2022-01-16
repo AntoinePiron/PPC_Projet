@@ -5,12 +5,12 @@ import sysv_ipc
 from multiprocessing import shared_memory
 
 playerID = 0
-
+playerPID = os.getpid()
 key = 128 # Declaration of the key for the message queues
 debutkey = 100 #Could be passed to console args ?
 semKey = 256
-
 myHand = Hand([0,0,0,0,0])
+mq = sysv_ipc.MessageQueue(key) #Joining main message queue
 
 #Fonction self-explainatory, waits for enough ppl to join the game
 def wait(value, md):
@@ -80,32 +80,91 @@ def TrackingCurrentOffers():
                     continue
         except:
             print("Please enter a valid number.")
-    while True:
-        answer = input("Update offer ? [y/n]")
-        answer = answer.lower()
-        if answer == "y":
-            while True:
-                try:
-                    cards = int(input("Number of cards : "))
-                    if cards < 1 or cards > 5 :
-                        print("Please enter a valid number : [1,5]")
-                        continue
-                    else:
-                        offersSemaphore.acquire()
-                        currentOffers[playerID-1] = pid.__str__() + ";" + cards.__str__()
-                        offersSemaphore.release()
-                        break
-                except:
-                    print("Please enter a valid number.")
-        elif answer == "n":
-            print("leaving offers")
-            break
-        else:
-            print("invalid input")
-            continue
-    #En attendant la suite
-    while True:
-        pass
+                
+    choice = int(input("Enter 1 to propose an offer, Enter 2 to choose from an existing offer"))
+    if choice == 1:
+        while True:
+            try:
+                offer = int(input("Number of cards : "))
+                if offer < 1 or offer > 5 :
+                    print("Please enter a valid number : [1,5]")
+                    continue
+                else:
+                    offersSemaphore.acquire()
+                    currentOffers[playerID-1] = pid.__str__() + ";" + offer.__str__()
+                    offersSemaphore.release()
+                    offersent(offer)
+                    break
+            except sysv_ipc.BusyError:
+                print("Please enter a valid number.")
+        
+    if choice == 2:
+        print("The offers list is")
+        print(currentOffers)
+        offer= int(input("Choice the number of the offer you want to accept : "))  
+        cardnumber = int(currentOffers[offer -1].partition(';')[2])
+        tradePID = int(currentOffers[offer -1].partition(';')[0])
+        print(cardnumber + tradePID)     
+        offeracepted(cardnumber, tradePID)
+
+
+def offersent(offer):
+    HisHand = Hand([0] * 5)
+    accept, t = mq.receive(type = playerPID)
+    traderPID = int(accept.decode())
+    print("Someone accepted your offer ! You now need to choose what cards to send")
+    for i in range(offer):
+        card = int(input("Choose the nomber of the card you want to send"))
+        
+        #if myHand[card] == 0:
+         #   print("You have chosen a card you already sent... thats not very nice, please choose another")
+        #else:
+        mq.send(str(myHand.getCard(card)).encode(), type = traderPID)
+        
+        myHand.setCard(0, card)
+    print("Cards sent ! waiting for reply")
+       
+
+    for i in range(offer):
+        cardreceived, t = mq.receive(type = playerID)
+        HisHand.setCard(int(cardreceived.decode()), i)
+    print("Hand received ! Adding it to your own hand")
+    
+    for i in range(5):
+        for j in range(5):
+            if myHand.getCard(i) == 0:
+                myHand.setCard(HisHand.getCard(j), i)
+            
+    print("Your hand is now " +  myHand.__str__())
+
+    
+def offeracepted(offer, traderPID):
+    print("You have accepted an offer, the player will soon send it to you")
+    HisHand = Hand([0] * 5)
+    mq.send(str(playerPID).encode(), type = traderPID)
+    for i in range(offer):
+        card, t = mq.receive(type = playerID)
+        
+        cardnum = int(card.decode())
+        HisHand.setCard(cardnum, i)
+    print("Cards received")
+    print("Now send him your cards")
+    for i in range(offer):
+        card = int(input("Choose the nomber of the card you want to send"))
+        #if myHand[card] == 0:
+         #   print("You have chosen a card you already sent... thats not very nice, please choose another")
+        #else:
+        mq.send(str(myHand.getCard(card)).encode(), type = traderPID)
+        myHand.setCard(0, card)
+    
+    for i in range(5):
+        for j in range(5):
+            if myHand.getCard(i) == 0:
+                myHand.setCard(HisHand.getCard(j), i)
+            
+            
+    print("Your hand is now " +  myHand.__str__())
+
 
 def receiveHands():
     print("Receiving hand ...")
@@ -115,10 +174,10 @@ def receiveHands():
     print("Hand received")
     print("My hand : ", myHand.__str__())
 
-
 if __name__ == "__main__":
-    joinserver(os.getpid())
+    joinserver(playerPID)
     receiveHands()
+    print(myHand.__str__())
     TrackingCurrentOffers()
     
   
