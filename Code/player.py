@@ -100,7 +100,7 @@ def TrackingCurrentOffers():
         
     if choice == 2:
         print("The offers list is")
-        print(currentOffers)
+        print(list(currentOffers))
         offer= int(input("Choice the number of the offer you want to accept : "))  
         cardnumber = int(currentOffers[offer -1].partition(';')[2])
         tradePID = int(currentOffers[offer -1].partition(';')[0])
@@ -170,9 +170,9 @@ def receiveHands():
     print("Receiving hand ...")
     mq = sysv_ipc.MessageQueue(key)
     byteHand, _ = mq.receive(type = os.getpid())
+    global myHand
     myHand = pickle.loads(byteHand)
     print("Hand received")
-    print("My hand : ", myHand.__str__())
 
 if __name__ == "__main__":
     joinserver(playerPID)
