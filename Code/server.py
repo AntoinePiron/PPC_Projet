@@ -1,6 +1,9 @@
+from tkinter.tix import Tree
 import sysv_ipc
 import time
 from multiprocessing import shared_memory
+from utils import *
+import pickle
 
 
 ListePid = []
@@ -8,8 +11,6 @@ ListePid = []
 key = 128   # Declaration of the key for the message queues
 debutkey = 100 #Could be passed to console args ?
 
-#Shared Memory used to track current offrers 
-currentOffers = shared_memory.ShareableList(["0;0","0;0","0;0"], name="currentOffers")
 semKey = 256
 #A semaphore used to protect the sharedMemory
 offersSemaphore = sysv_ipc.Semaphore(256, sysv_ipc.IPC_CREAT, initial_value = 1)
@@ -18,6 +19,14 @@ mq = sysv_ipc.MessageQueue(key, sysv_ipc.IPC_CREAT) #Creating main message queue
 
 #Fonction qui permet de vider les messages queue encore pleine
 def clearStart():
+    #reload the shared memory
+    try:
+        _ = shared_memory.ShareableList(["0;0","0;0","0;0"],name="currentOffers")
+    except FileExistsError:
+        temp = shared_memory.ShareableList(name="currentOffers")
+        temp.shm.unlink()
+        _ = shared_memory.ShareableList(["0;0","0;0","0;0"],name="currentOffers")
+
     md = sysv_ipc.MessageQueue(debutkey, sysv_ipc.IPC_CREAT)
     md.remove()
 
@@ -52,13 +61,28 @@ def debutjeu():
 def game():
     TrackingCurrentOffers()
 
+def sendCard():
+    print("Generating hands ... ")
+    hands = generateHands(len(ListePid))
+    print("Hands generated : ", hands)
+    print("Sending hands ...")
+    for i in range(len(ListePid)):
+        handToSend = hands[i]
+        pidToSend = int(ListePid[i])
+        byteHand = pickle.dumps(handToSend)
+        mq.send(byteHand, type = pidToSend)
+    print("Hands sended !")
+
 #Pour l'instant on affiche juste les offres 
 def TrackingCurrentOffers():
+    offers = shared_memory.ShareableList(name="currentOffers")
     while True: 
         time.sleep(5)
-        print(list(currentOffers))
+        print(list(offers))
+        
 
 if __name__ == "__main__": 
     clearStart()
     debutjeu()
+    sendCard()
     game()

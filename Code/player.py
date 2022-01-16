@@ -1,5 +1,4 @@
-
-import time
+import pickle
 from utils import *
 import os
 import sysv_ipc
@@ -8,11 +7,12 @@ from multiprocessing import shared_memory
 
 
 playerID = 0
-pid = 0
 
 key = 128 # Declaration of the key for the message queues
 debutkey = 100 #Could be passed to console args ?
 semKey = 256
+
+myHand = Hand([0,0,0,0,0])
 
 #Fonction self-explainatory, waits for enough ppl to join the game
 def wait(value, md):
@@ -63,7 +63,7 @@ def joinserver(pid):
 #Fonction game, placeholder for now
 def game():
     TrackingCurrentOffers()
-    
+
 #Fonction qui bah est ton code pelo mdr
 def TrackingCurrentOffers():
     currentOffers = shared_memory.ShareableList(name="currentOffers")
@@ -113,8 +113,18 @@ def TrackingCurrentOffers():
     while True:
         pass
 
+def receiveHands():
+    print("Receiving hand ...")
+    mq = sysv_ipc.MessageQueue(key)
+    byteHand, _ = mq.receive(type = os.getpid())
+    myHand = pickle.loads(byteHand)
+    print("Hand received")
+    print("My hand : ", myHand.__str__())
+
+
 if __name__ == "__main__":
     joinserver(os.getpid())
+    receiveHands()
     game()
     
   
