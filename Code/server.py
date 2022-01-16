@@ -1,4 +1,3 @@
-from tkinter.tix import Tree
 import sysv_ipc
 import time
 from multiprocessing import shared_memory
