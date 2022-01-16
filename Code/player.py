@@ -32,12 +32,6 @@ def wait(value, md):
     
     md.send(str(1).encode(),type = 3)   #Sends a type 3 message, to ack the start of the game
     print("Starting game")
-    game()
-                     
-#Fonction game, placeholder for now
-def game():
-    TrackingCurrentOffers()
-    
     
     #Handle the joining the server, and sending the process' pid
 def joinserver(pid):
@@ -59,14 +53,17 @@ def joinserver(pid):
             md.send(str(pid).encode(), type = 1)
             nbjoueur, t = md.receive(type = 2)
             value = int(nbjoueur.decode()) #Receive ack, with value being the number of player already connected
-            wait(value, md)
-            
+            wait(value, md)          
     except sysv_ipc.ExistentialError:     #If the debut MessageQueue is not found, exits the process
         print("Could no connect to server")
         print("Either server not launched, or game already staarted")
         print("Exiting")
         exit(1)
 
+#Fonction game, placeholder for now
+def game():
+    TrackingCurrentOffers()
+    
 #Fonction qui bah est ton code pelo mdr
 def TrackingCurrentOffers():
     currentOffers = shared_memory.ShareableList(name="currentOffers")
@@ -118,5 +115,6 @@ def TrackingCurrentOffers():
 
 if __name__ == "__main__":
     joinserver(os.getpid())
+    game()
     
   

@@ -46,13 +46,13 @@ def debutjeu():
         
     print("Starting message queue deleted, game starting")
     md.remove()
-    game()
         
         
 #Fonction game, placeholder for now
 def game():
     TrackingCurrentOffers()
 
+#Pour l'instant on affiche juste les offres 
 def TrackingCurrentOffers():
     while True: 
         time.sleep(5)
@@ -61,3 +61,4 @@ def TrackingCurrentOffers():
 if __name__ == "__main__": 
     clearStart()
     debutjeu()
+    game()
