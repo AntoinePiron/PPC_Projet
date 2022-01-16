@@ -24,10 +24,10 @@ class Hand:
         return outstr
     
     
-    def getCard(self, index, hand):
+    def getCard(self, index):
         return self.myHand[index]
     
-    def setCard(self, card, index, hand):
+    def setCard(self, card, index):
         self.myHand[index] = card
 
 def generateHands(numberOfPlayers):
