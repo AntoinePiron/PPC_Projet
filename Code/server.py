@@ -4,7 +4,6 @@ from multiprocessing import shared_memory
 from utils import *
 import pickle
 
-
 ListePid = []
 
 key = 128   # Declaration of the key for the message queues
@@ -16,7 +15,7 @@ offersSemaphore = sysv_ipc.Semaphore(256, sysv_ipc.IPC_CREAT, initial_value = 1)
 
 mq = sysv_ipc.MessageQueue(key, sysv_ipc.IPC_CREAT) #Creating main message queue
 
-#Fonction qui permet de vider les messages queue encore pleine
+#Fonction qui permet de vider les messages queue encore pleine et de reset la shared memory
 def clearStart():
     #reload the shared memory
     try:
@@ -54,11 +53,6 @@ def debutjeu():
         
     print("Starting message queue deleted, game starting")
     md.remove()
-        
-        
-#Fonction game, placeholder for now
-def game():
-    TrackingCurrentOffers()
 
 def sendCard():
     print("Generating hands ... ")
@@ -84,4 +78,4 @@ if __name__ == "__main__":
     clearStart()
     debutjeu()
     sendCard()
-    game()
+    TrackingCurrentOffers()

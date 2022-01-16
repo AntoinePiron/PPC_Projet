@@ -4,8 +4,6 @@ import os
 import sysv_ipc
 from multiprocessing import shared_memory
 
-
-
 playerID = 0
 
 key = 128 # Declaration of the key for the message queues
@@ -59,10 +57,6 @@ def joinserver(pid):
         print("Either server not launched, or game already staarted")
         print("Exiting")
         exit(1)
-
-#Fonction game, placeholder for now
-def game():
-    TrackingCurrentOffers()
 
 #Fonction qui bah est ton code pelo mdr
 def TrackingCurrentOffers():
@@ -125,6 +119,6 @@ def receiveHands():
 if __name__ == "__main__":
     joinserver(os.getpid())
     receiveHands()
-    game()
+    TrackingCurrentOffers()
     
   
