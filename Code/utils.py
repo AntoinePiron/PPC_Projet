@@ -22,6 +22,13 @@ class Hand:
         for i in range(len(self.myHand)):
             outstr += "Carte %s : %s | "%(i+1, cardType(self.myHand[i]).name)
         return outstr
+    
+    
+    def getCard(self, index, hand):
+        return self.myHand[index]
+    
+    def setCard(self, card, index, hand):
+        self.myHand[index] = card
 
 def generateHands(numberOfPlayers):
     numberOfCards = numberOfPlayers * 5
