@@ -67,43 +67,24 @@ def TrackingCurrentOffers():
     offersSemaphore = sysv_ipc.Semaphore(semKey)
     pid = os.getpid()
     while True:
-        try:
-            playerID = int(input("Number of player: "))
-            if playerID < 1 or playerID > len(list(currentOffers)) :
-                print("Please enter a valid number : [1,%s]"%(len(list(currentOffers))))
-                continue
-            else:
-                if currentOffers[playerID-1] == "0;0":
-                    offersSemaphore.acquire()
-                    currentOffers[playerID-1] = pid.__str__() + ";0"
-                    offersSemaphore.release()
-                    break
-                else:
-                    print("Player number already attributed")
-                    continue
-        except:
-            print("Please enter a valid number.")
-                
-    choice = int(input("Enter 1 to propose an offer, Enter 2 to choose from an existing offer"))
+        playerID = checkInput(1, len(list(currentOffers)), "Number of player in [1,%s]: "%(len(list(currentOffers))))
+        if currentOffers[playerID-1] == "0;0":
+            offersSemaphore.acquire()
+            currentOffers[playerID-1] = pid.__str__() + ";0"
+            offersSemaphore.release()
+            break
+        else:
+            print("Player number already attributed")
+            continue       
+    choice = checkInput(1,2,"Enter 1 to propose an offer, Enter 2 to choose from an existing offer : ")
     if choice == 1:
-        while True:
-            try:
-                offer = int(input("Number of cards : "))
-                if offer < 1 or offer > 5 :
-                    print("Please enter a valid number : [1,5]")
-                    continue
-                else:
-                    offersSemaphore.acquire()
-                    currentOffers[playerID-1] = pid.__str__() + ";" + offer.__str__()
-                    offersSemaphore.release()
-                    offersent(offer)
-                    break
-            except sysv_ipc.BusyError:
-                print("Please enter a valid number.")
-        
+        offer = checkInput(1,5,"Number of cards in [1,5]: ")
+        offersSemaphore.acquire()
+        currentOffers[playerID-1] = pid.__str__() + ";" + offer.__str__()
+        offersSemaphore.release()
+        offersent(offer)   
     if choice == 2:
-        print("The offers list is")
-        print(list(currentOffers))
+        print("The offers list is : %s"%(list(currentOffers)))
         offer= int(input("Choice the number of the offer you want to accept : "))  
         cardnumber = int(currentOffers[offer -1].partition(';')[2])
         tradePID = int(currentOffers[offer -1].partition(';')[0])
@@ -113,21 +94,20 @@ def TrackingCurrentOffers():
 
 def offersent(offer):
     HisHand = Hand([0] * 5)
-    accept, t = mq.receive(type = playerPID)
+    accept, _ = mq.receive(type = playerPID)
     traderPID = int(accept.decode())
     print("Someone accepted your offer ! You now need to choose what cards to send")
     for i in range(offer):
-        card = int(input("Choose the nomber of the card you want to send"))
-        
-        #if myHand[card] == 0:
-         #   print("You have chosen a card you already sent... thats not very nice, please choose another")
-        #else:
-        mq.send(str(myHand.getCard(card)).encode(), type = traderPID)
-        
-        myHand.setCard(0, card)
+        while True:
+            card = checkInput(1,5,"Choose the nomber of the card you want to send in [1,5] : ")
+            if myHand.getCard(card-1) == 0:
+                print("You have chosen a card you already sent... thats not very nice, please choose another.")
+                continue
+            else:
+                mq.send(str(myHand.getCard(card-1)).encode(), type = traderPID)
+                myHand.setCard(0, card-1)
+                break 
     print("Cards sent ! waiting for reply")
-       
-
     for i in range(offer):
         cardreceived, t = mq.receive(type = playerID)
         HisHand.setCard(int(cardreceived.decode()), i)
