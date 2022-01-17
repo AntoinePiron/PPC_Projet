@@ -13,8 +13,6 @@ semKey = 256
 #A semaphore used to protect the sharedMemory
 offersSemaphore = sysv_ipc.Semaphore(256, sysv_ipc.IPC_CREAT, initial_value = 1)
 
-mq = sysv_ipc.MessageQueue(key, sysv_ipc.IPC_CREAT) #Creating main message queue
-
 #Fonction qui permet de vider les messages queue encore pleine et de reset la shared memory
 def clearStart():
     #reload the shared memory
@@ -27,10 +25,15 @@ def clearStart():
 
     md = sysv_ipc.MessageQueue(debutkey, sysv_ipc.IPC_CREAT)
     md.remove()
+    md = sysv_ipc.MessageQueue(debutkey, sysv_ipc.IPC_CREAT)
+
+    mq = sysv_ipc.MessageQueue(key, sysv_ipc.IPC_CREAT)
+    mq.remove()
+    mq = sysv_ipc.MessageQueue(key, sysv_ipc.IPC_CREAT)
 
 def debutjeu():
     print("Server has been launched, waiting for connections") 
-    md = sysv_ipc.MessageQueue(debutkey, sysv_ipc.IPC_CREAT) #Creating debut message queue
+    md = sysv_ipc.MessageQueue(debutkey) #Creating debut message queue
     #While there are less than 3 connection, wait for connection type messages
     while (len(ListePid) < 3):
         connection, t = md.receive(type = 1)
@@ -55,6 +58,7 @@ def debutjeu():
     md.remove()
 
 def sendCard():
+    mq = sysv_ipc.MessageQueue(key)
     print("Generating hands ... ")
     hands = generateHands(len(ListePid))
     print("Hands generated : ", hands)
