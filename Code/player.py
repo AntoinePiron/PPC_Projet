@@ -11,6 +11,28 @@ debutkey = 100 #Could be passed to console args ?
 semKey = 256
 myHand = Hand([0,0,0,0,0])
 mq = sysv_ipc.MessageQueue(key) #Joining main message queue
+    
+    #Handle the joining the server, and sending the process' pid
+def joinserver(pid):
+    print("Hello and Welcome to the Cambiecolo game !")
+    
+    try: #Will try to join an existing debut queue, starting connnection if succesful 
+        md = sysv_ipc.MessageQueue(debutkey)
+        print("Your pid will now be sent to the server for you to be in the game")
+        type = checkInput(1,1,"1 for sending pid, pressing another key will result in termination : ")
+        if type != 1:
+            print("Leaving game")
+            exit(0)    
+        else: #IF user,types one, sends pid to server, than wait for ack of connection
+            md.send(str(pid).encode(), type = 1)
+            nbjoueur, t = md.receive(type = 2)
+            value = int(nbjoueur.decode()) #Receive ack, with value being the number of player already connected
+            wait(value, md)          
+    except sysv_ipc.ExistentialError:     #If the debut MessageQueue is not found, exits the process
+        print("Could no connect to server")
+        print("Either server not launched, or game already staarted")
+        print("Exiting")
+        exit(1)
 
 #Fonction self-explainatory, waits for enough ppl to join the game
 def wait(value, md):
@@ -30,33 +52,14 @@ def wait(value, md):
     
     md.send(str(1).encode(),type = 3)   #Sends a type 3 message, to ack the start of the game
     print("Starting game")
-    
-    #Handle the joining the server, and sending the process' pid
-def joinserver(pid):
-    print("Hello and Welcome to the Cambiecolo game !")
-    
-    try: #Will try to join an existing debut queue, starting connnection if succesful 
-        md = sysv_ipc.MessageQueue(debutkey)
-        print("Your pid will now be sent to the server for you to be in the game")
-        try: #Ask player to send its pid, easy stuff
-            type = int(input("1 for sending pid, pressing another key will result in termination : "))
-            if type != 1 and type != 2:
-                print("Wrong values")
-                exit(1)
-        except:
-            print("An error occured")
-            exit(1)
-            
-        if type == 1: #IF user,types one, sends pid to server, than wait for ack of connection
-            md.send(str(pid).encode(), type = 1)
-            nbjoueur, t = md.receive(type = 2)
-            value = int(nbjoueur.decode()) #Receive ack, with value being the number of player already connected
-            wait(value, md)          
-    except sysv_ipc.ExistentialError:     #If the debut MessageQueue is not found, exits the process
-        print("Could no connect to server")
-        print("Either server not launched, or game already staarted")
-        print("Exiting")
-        exit(1)
+
+def receiveHands():
+    print("Receiving hand ...")
+    mq = sysv_ipc.MessageQueue(key)
+    byteHand, _ = mq.receive(type = os.getpid())
+    global myHand
+    myHand = pickle.loads(byteHand)
+    print("Hand received")
 
 #Fonction qui bah est ton code pelo mdr
 def TrackingCurrentOffers():
@@ -164,15 +167,6 @@ def offeracepted(offer, traderPID):
             
             
     print("Your hand is now " +  myHand.__str__())
-
-
-def receiveHands():
-    print("Receiving hand ...")
-    mq = sysv_ipc.MessageQueue(key)
-    byteHand, _ = mq.receive(type = os.getpid())
-    global myHand
-    myHand = pickle.loads(byteHand)
-    print("Hand received")
 
 if __name__ == "__main__":
     joinserver(playerPID)
