@@ -43,3 +43,18 @@ def generateHands(numberOfPlayers):
     for i in range(0, len(cards), 5):
         hands.append(Hand(cards[i:i+5]))
     return hands
+
+def checkInput(min, max, display):
+    returnValue = 0
+    while True:
+        try:
+            returnValue = int(input(display))
+            if (returnValue > max or returnValue < min):
+                print("Please enter a value between [%s,%s]"%(min,max))
+                continue
+            else:
+                break
+        except:
+            print("Please enter an integer value.")
+            continue
+    return returnValue
