@@ -113,15 +113,14 @@ def offersent(offer):
         cardreceived, _ = mq.receive(type = playerID)
         HisHand.setCard(int(cardreceived.decode()), i)
     print("Hand received ! Adding it to your own hand")
-    print("His hand : %s"%(HisHand.myHand))
-    
-    for i in range(5):
-        for j in range(5):
-            if myHand.getCard(i) == 0:
-                myHand.setCard(HisHand.getCard(j), i)
-        
-                   
+    myHand.fuzeHands(HisHand.myHand)       
     print("Your hand is now " +  myHand.__str__())
+    #On pense à remettre les offres à zérp 
+    currentOffers = shared_memory.ShareableList(name="currentOffers")
+    offersSemaphore = sysv_ipc.Semaphore(semKey)
+    offersSemaphore.acquire()
+    currentOffers[playerID-1] = (os.getpid()).__str__() + ";0"
+    offersSemaphore.release()
 
     
 def offeracepted(offer, traderPID):
@@ -145,12 +144,7 @@ def offeracepted(offer, traderPID):
                 mq.send(str(myHand.getCard(card-1)).encode(), type = traderPID)
                 myHand.setCard(0, card-1)
                 break 
-    print("His hand : %s"%(HisHand.myHand))
-    for i in range(5):
-        for j in range(5):
-            if myHand.getCard(i) == 0:
-                myHand.setCard(HisHand.getCard(j), i)
-
+    myHand.fuzeHands(HisHand.myHand)
     print("Your hand is now " +  myHand.__str__())
 
 if __name__ == "__main__":

@@ -23,12 +23,22 @@ class Hand:
             outstr += "Carte %s : %s | "%(i+1, cardType(self.myHand[i]).name)
         return outstr
     
-    
     def getCard(self, index):
         return self.myHand[index]
     
     def setCard(self, card, index):
         self.myHand[index] = card
+    
+    def fuzeHands(self, hand):
+        for i in range(len(self.myHand)):
+            if self.myHand[i] == 0:
+                j = 0
+                while j < len(hand):
+                    if hand[j] != 0:
+                        self.myHand[i] = hand[j]
+                        hand[j] = 0
+                        break
+                    j += 1
 
 def generateHands(numberOfPlayers):
     numberOfCards = numberOfPlayers * 5
