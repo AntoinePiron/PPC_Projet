@@ -1,8 +1,8 @@
-import sysv_ipc
-import time
+import sysv_ipc, time, pickle
 from multiprocessing import shared_memory
 from utils import *
-import pickle
+import signal
+import os
 
 ListePid = []
 
@@ -23,11 +23,11 @@ def clearStart():
         temp = shared_memory.ShareableList(name="currentOffers")
         temp.shm.unlink()
         _ = shared_memory.ShareableList(["0;0","0;0","0;0"],name="currentOffers")
-
+    global md
     md = sysv_ipc.MessageQueue(debutkey, sysv_ipc.IPC_CREAT)
     md.remove()
     md = sysv_ipc.MessageQueue(debutkey, sysv_ipc.IPC_CREAT)
-
+    global mq
     mq = sysv_ipc.MessageQueue(key, sysv_ipc.IPC_CREAT)
     mq.remove()
     mq = sysv_ipc.MessageQueue(key, sysv_ipc.IPC_CREAT)
@@ -75,12 +75,21 @@ def sendCard():
 def TrackingCurrentOffers():
     offers = shared_memory.ShareableList(name="currentOffers")
     while True: 
+        winwait()
         time.sleep(5)
         print(list(offers))
         
+def winwait():
+    win, t = mq.receive(type = 1)
+    print("Received win signal, sending termination signal")
+    for pid in ListePid:
+        os.kill(int(pid), signal.SIGHUP)
+        
+    print("Implement something to kill me now pls")
 
 if __name__ == "__main__": 
     clearStart()
     debutjeu()
     sendCard()
     TrackingCurrentOffers()
+    

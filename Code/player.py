@@ -3,6 +3,9 @@ from utils import *
 import os
 import sysv_ipc
 from multiprocessing import shared_memory
+import signal
+import sys
+import time
 
 playerID = 0
 playerPID = os.getpid()
@@ -10,7 +13,17 @@ key = 128 # Declaration of the key for the message queues
 debutkey = 100 #Could be passed to console args ?
 semKey = 256
 myHand = Hand([0,0,0,0,0])
+
+
+def handler(signum, frame):
+    currentOffers.close()
+    currentOffers.unlink()
+    os._exit(0)
     
+    
+    
+signal.signal(signal.SIGHUP, handler)
+
     #Handle the joining the server, and sending the process' pid
 def joinserver(pid):
     print("Hello and Welcome to the Cambiecolo game !")
@@ -54,6 +67,7 @@ def wait(value, md):
 
 def receiveHands():
     print("Receiving hand ...")
+    global mq
     mq = sysv_ipc.MessageQueue(key)
     byteHand, _ = mq.receive(type = os.getpid())
     global myHand
@@ -62,6 +76,7 @@ def receiveHands():
 
 #Fonction qui bah est ton code pelo mdr
 def TrackingCurrentOffers():
+    global currentOffers
     currentOffers = shared_memory.ShareableList(name="currentOffers")
     offersSemaphore = sysv_ipc.Semaphore(semKey)
     pid = os.getpid()
@@ -76,7 +91,7 @@ def TrackingCurrentOffers():
             print("Player number already attributed")
             continue    
     while True:       
-        choice = checkInput(1,2,"Enter 1 to propose an offer, Enter 2 to choose from an existing offer : ")
+        choice = checkInput(1,3,"Enter 1 to propose an offer, 2 to choose from an existing offer, 3 if you think you won ! : ")
         if choice == 1:
             offer = checkInput(1,5,"Number of cards in [1,5]: ")
             offersSemaphore.acquire()
@@ -90,6 +105,26 @@ def TrackingCurrentOffers():
             tradePID = int(currentOffers[offer -1].partition(';')[0])
             print(cardnumber + tradePID)     
             offeracepted(cardnumber, tradePID)
+        if choice == 3:
+            wincheck(myHand)        
+
+
+
+
+def wincheck(hand):
+    firstcard = myHand.getCard(0)
+    a = 0
+    mq.send(str(1).encode(),type = 1)
+
+   # for i in range(5):
+   #     if (firstcard == myHand.get(i)):
+ #           a = a + 1
+  #          print(a)
+ #   if (a == 5):
+  #      print("zoubida sending signal to server ")
+    #    mq.send(str(1).encode(),type = 1)
+ #   else:
+  #      print("You did not win mate")
 
 
 def offersent(offer):
