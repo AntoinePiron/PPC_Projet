@@ -73,6 +73,7 @@ def sendCard():
 
 #Pour l'instant on affiche juste les offres 
 def TrackingCurrentOffers():
+    global offers
     offers = shared_memory.ShareableList(name="currentOffers")
     while True: 
         winwait()
@@ -86,6 +87,12 @@ def winwait():
         os.kill(int(pid), signal.SIGHUP)
         print("Sent signal to" + pid)
         
+    for pid in ListePid:
+        end, t = mq.receive(type = 2)
+    offers.shm.close()
+    offers.shm.unlink()
+    print("Player all left, shutting down")
+    os.kill(os.getpid, signal.SIGKILL)
     print("Implement something to kill me now pls")
 
 if __name__ == "__main__": 

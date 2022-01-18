@@ -176,10 +176,11 @@ def offeracepted(offer, traderPID):
     print("Your hand is now " +  myHand.__str__())
 
 def handler(signum, frame):
-    currentOffers.shm.close()
-    currentOffers.shm.unlink()
+    offersSemaphore = sysv_ipc.Semaphore(semKey)
+
     print("\n OH no game ended now i will die ")
     time.sleep(2)
+    mq.send(str(1).encode(), type = 2)
     os.kill(playerPID, signal.SIGTERM)    
     
 
