@@ -69,7 +69,6 @@ def receiveHands():
 
 #Fonction qui bah est ton code pelo mdr
 def TrackingCurrentOffers():
-    global currentOffers
     currentOffers = shared_memory.ShareableList(name="currentOffers")
     offersSemaphore = sysv_ipc.Semaphore(semKey)
     pid = os.getpid()
@@ -177,16 +176,20 @@ def offeracepted(offer, traderPID):
 
 def handler(signum, frame):
     offersSemaphore = sysv_ipc.Semaphore(semKey)
-    offersSemaphore.acquire()
-    currentOffers.shm.close()
-    offersSemaphore.release()
     print("\n OH no game ended now i will die ")
     time.sleep(2)
     mq.send(str(1).encode(), type = 2)
     mq.receive(type = playerPID)
     print("Message reçu")
+    offersSemaphore.acquire()
+    try:
+        _ = shared_memory.ShareableList(["0;0","0;0","0;0"],name="currentOffers")
+    finally:
+        temp = shared_memory.ShareableList(name="currentOffers")
+        temp.shm.unlink()
+    offersSemaphore.release()
 
-    os.kill(playerPID, signal.SIGTERM)    
+    os.kill(playerPID, signal.SIGKILL)    
     
 
 if __name__ == "__main__":
