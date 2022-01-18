@@ -54,9 +54,29 @@ def wait(value, md):
     #If there are more than 3 players, breaks the loop   
     print("There are enough players to start the game")
     print("Sending a acceptation message")
-    
-    md.send(str(1).encode(),type = 3)   #Sends a type 3 message, to ack the start of the game
-    print("Starting game")
+    while True:
+        flag = checkInput(1,2,"Enter 1 to start game, 2 to wait for another player ")
+        if (flag == 1):
+            print("You will now all wait for all players to accept the start of the game")
+            md.send(str(1).encode(),type = 3)   #Sends a type 3 message, to ack the start of the game
+        if (flag == 2):
+            print("Waiting for all players to send their choice...")
+            md.send(str(2).encode(),type = 3)
+            
+        start, t = md.receive(type = 4)
+        value = int(start.decode())
+        if (value == 1):
+            print("Game starting")
+            break
+        else:
+            print("Someone decided to wait")
+            waiting, t = md.receive(type = 2)  # Waits for connection ack type messages
+            value = int(waiting.decode()) 
+            print("New connection detected")
+            print("There are now " + str(value) + " players connected")
+            continue
+        
+        
 
 def receiveHands():
     print("Receiving hand ...")

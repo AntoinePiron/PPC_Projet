@@ -4,3 +4,4 @@ Pour message queue debut (md):
 1 --> reception des PIDS des joueurs 
 2 --> connection ack server > player
 3 --> starting game ack player > server
+4 --> starting game accepted (value == 1) or denied (value == 2) server > player

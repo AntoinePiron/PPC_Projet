@@ -42,12 +42,30 @@ def debutjeu():
     
     print("We have 3 players !")
     print("We will now wait for every player to accept the start of the game")
-    greenflag = 0
-    while (greenflag < len(ListePid)): #Waits for every players to ack the start of the gaame
-        value, t = md.receive(type = 3)
-        flag = int(value.decode())
-        greenflag = flag + greenflag #Value of flag message should always be one (for now)
-        print(greenflag)
+    while True:
+        greenflag = 0
+        i = 0
+        while (i < len(ListePid)): #Waits for every players to ack the start of the gaame
+            value, t = md.receive(type = 3)
+            i = i +1
+            flag = int(value.decode())
+            greenflag = flag + greenflag #Value of flag message should always be one (for now)
+        if (greenflag != len(ListePid)):
+            print("Someone has decide to wait for another player to join")
+            for i in range(len(ListePid)):
+                md.send(str(2).encode(), type = 4)
+            connection, t = md.receive(type = 1)
+            print("New connection") 
+            pid = connection.decode() #When a conncetion is detected, adds its pid to the list
+            ListePid.append(pid)
+            for i in range(len(ListePid)): #Sends a connection ack to every player still waiting
+                print(".")
+                md.send(str(len(ListePid)).encode(), type = 2)
+        else:
+            print("Starting game")
+            for i in range(len(ListePid)):
+                md.send(str(1).encode(), type = 4)
+            break
         
     print("Starting message queue deleted, game starting")
     print("Creating shared memory")
