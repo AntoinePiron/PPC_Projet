@@ -16,13 +16,7 @@ offersSemaphore = sysv_ipc.Semaphore(256, sysv_ipc.IPC_CREAT, initial_value = 1)
 
 #Fonction qui permet de vider les messages queue encore pleine et de reset la shared memory
 def clearStart():
-    #reload the shared memory
-    try:
-        _ = shared_memory.ShareableList(["0;0","0;0","0;0"],name="currentOffers")
-    except FileExistsError:
-        temp = shared_memory.ShareableList(name="currentOffers")
-        temp.shm.unlink()
-        _ = shared_memory.ShareableList(["0;0","0;0","0;0"],name="currentOffers")
+    #reload the messages queues
     global md
     md = sysv_ipc.MessageQueue(debutkey, sysv_ipc.IPC_CREAT)
     md.remove()
@@ -56,13 +50,19 @@ def debutjeu():
         print(greenflag)
         
     print("Starting message queue deleted, game starting")
-    md.remove()
+    print("Creating shared memory")
+    try:
+        _ = shared_memory.ShareableList(["0;0"] * len(ListePid),name="currentOffers")
+    except FileExistsError:
+        temp = shared_memory.ShareableList(name="currentOffers")
+        temp.shm.unlink()
+        _ = shared_memory.ShareableList(["0;0"] * len(ListePid), name="currentOffers")
 
 def sendCard():
     mq = sysv_ipc.MessageQueue(key)
     print("Generating hands ... ")
     hands = generateHands(len(ListePid))
-    print("Hands generated : ", hands)
+    print("Hands generated : ")
     print("Sending hands ...")
     for i in range(len(ListePid)):
         handToSend = hands[i]
@@ -76,9 +76,9 @@ def TrackingCurrentOffers():
     global offers
     offers = shared_memory.ShareableList(name="currentOffers")
     while True: 
+        print(list(offers))
         winwait()
         time.sleep(5)
-        print(list(offers))
         
 def winwait():
     win, t = mq.receive(type = 1)

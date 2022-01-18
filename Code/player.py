@@ -7,7 +7,7 @@ import signal
 import sys
 import time
 
-playerID = 0
+global playerID 
 playerPID = os.getpid()
 key = 128 # Declaration of the key for the message queues
 debutkey = 100 #Could be passed to console args ?
@@ -72,16 +72,16 @@ def TrackingCurrentOffers():
     currentOffers = shared_memory.ShareableList(name="currentOffers")
     offersSemaphore = sysv_ipc.Semaphore(semKey)
     pid = os.getpid()
-    while True:
-        playerID = checkInput(1, len(list(currentOffers)), "Number of player in [1,%s]: "%(len(list(currentOffers))))
-        if currentOffers[playerID-1] == "0;0":
-            offersSemaphore.acquire()
-            currentOffers[playerID-1] = pid.__str__() + ";0"
-            offersSemaphore.release()
-            break
-        else:
-            print("Player number already attributed")
-            continue    
+    playerID = 0
+    for i in range(len(list(currentOffers))):
+        offersSemaphore.acquire()
+        if currentOffers[i] == "0;0" and playerID == 0:
+            playerID = i + 1
+            currentOffers[i] = pid.__str__() + ";0" 
+            print("Your player id is " + str(playerID) + " for this game")
+        offersSemaphore.release()
+  
+    
     while True:       
         choice = checkInput(1,3,"Enter 1 to propose an offer, 2 to choose from an existing offer, 3 if you think you won ! : ")
         if choice == 1:
