@@ -177,10 +177,15 @@ def offeracepted(offer, traderPID):
 
 def handler(signum, frame):
     offersSemaphore = sysv_ipc.Semaphore(semKey)
-
+    offersSemaphore.acquire()
+    currentOffers.shm.close()
+    offersSemaphore.release()
     print("\n OH no game ended now i will die ")
     time.sleep(2)
     mq.send(str(1).encode(), type = 2)
+    mq.receive(type = playerPID)
+    print("Message reçu")
+
     os.kill(playerPID, signal.SIGTERM)    
     
 

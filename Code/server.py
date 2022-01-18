@@ -91,8 +91,11 @@ def winwait():
         end, t = mq.receive(type = 2)
     offers.shm.close()
     offers.shm.unlink()
+    for pid in ListePid:
+        mq.send(str(1).encode(), type = int(pid))
+    
     print("Player all left, shutting down")
-    os.kill(os.getpid, signal.SIGKILL)
+    os.kill(os.getpid(), signal.SIGKILL)
     print("Implement something to kill me now pls")
 
 if __name__ == "__main__": 
