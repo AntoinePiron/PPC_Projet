@@ -97,26 +97,17 @@ def TrackingCurrentOffers():
             tradePID = int(currentOffers[offer -1].partition(';')[0])
             print(cardnumber + tradePID)     
             offeracepted(cardnumber, tradePID)
-        if choice == 3:
-            wincheck(myHand)        
-
-
-
-
-def wincheck(hand):
-    firstcard = myHand.getCard(0)
-    a = 0
-    mq.send(str(1).encode(),type = 1)
-
-   # for i in range(5):
-   #     if (firstcard == myHand.get(i)):
- #           a = a + 1
-  #          print(a)
- #   if (a == 5):
-  #      print("zoubida sending signal to server ")
-    #    mq.send(str(1).encode(),type = 1)
- #   else:
-  #      print("You did not win mate")
+        if choice == 3: #J'ai testé ta méthode mais ça marche pas :(
+            a = 0
+            for i in range(5):
+                if myHand.getCard(0) == myHand.getCard(i):
+                    a = a +1
+            if a == 5:
+                mq.send(str(1).encode(),type = 1)
+            else:
+                print("Your hand is not a winning")
+            
+                
 
 
 def offersent(offer):

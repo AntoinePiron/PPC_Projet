@@ -41,7 +41,7 @@ class Hand:
                     j += 1
     
     def winningHand(self):
-        if len(set(self.myHand)) == 1: #if all the elements are the same
+        if all(Cards == self.myHand[0] for Cards in self.myHand): #if all the elements are the same
             return True
         return False
 
