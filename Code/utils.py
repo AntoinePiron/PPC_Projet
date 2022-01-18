@@ -39,6 +39,13 @@ class Hand:
                         hand[j] = 0
                         break
                     j += 1
+    
+    def winningHand(self):
+        if len(set(self.myHand)) == 1: #if all the elements are the same
+            return True
+        return False
+
+
 
 def generateHands(numberOfPlayers):
     numberOfCards = numberOfPlayers * 5
