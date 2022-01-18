@@ -15,14 +15,7 @@ semKey = 256
 myHand = Hand([0,0,0,0,0])
 
 
-def handler(signum, frame):
-    currentOffers.close()
-    currentOffers.unlink()
-    os._exit(0)
     
-    
-    
-signal.signal(signal.SIGHUP, handler)
 
     #Handle the joining the server, and sending the process' pid
 def joinserver(pid):
@@ -182,7 +175,16 @@ def offeracepted(offer, traderPID):
     myHand.fuzeHands(HisHand.myHand)
     print("Your hand is now " +  myHand.__str__())
 
+def handler(signum, frame):
+    currentOffers.shm.close()
+    currentOffers.shm.unlink()
+    print("\n OH no game ended now i will die ")
+    time.sleep(2)
+    os.kill(playerPID, signal.SIGTERM)    
+    
+
 if __name__ == "__main__":
+    signal.signal(signal.SIGHUP, handler)
     joinserver(playerPID)
     receiveHands()
     print(myHand.__str__())

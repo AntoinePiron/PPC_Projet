@@ -84,6 +84,7 @@ def winwait():
     print("Received win signal, sending termination signal")
     for pid in ListePid:
         os.kill(int(pid), signal.SIGHUP)
+        print("Sent signal to" + pid)
         
     print("Implement something to kill me now pls")
 
