@@ -7,7 +7,6 @@ import signal
 import sys
 import time
 
-global playerID 
 playerPID = os.getpid()
 key = 128 # Declaration of the key for the message queues
 debutkey = 100 #Could be passed to console args ?
@@ -92,6 +91,7 @@ def TrackingCurrentOffers():
     currentOffers = shared_memory.ShareableList(name="currentOffers")
     offersSemaphore = sysv_ipc.Semaphore(semKey)
     pid = os.getpid()
+    global playerID 
     playerID = 0
     for i in range(len(list(currentOffers))):
         offersSemaphore.acquire()
@@ -123,9 +123,9 @@ def TrackingCurrentOffers():
                 if myHand.getCard(0) == myHand.getCard(i):
                     a = a +1
             if a == 5:
-                mq.send(str(1).encode(),type = 1)
+                mq.send(str(playerPID).encode(),type = 1)
             else:
-                print("Your hand is not a winning")
+                print("Your hand is not a winning Hand")
             
                 
 
@@ -157,7 +157,7 @@ def offersent(offer):
     currentOffers = shared_memory.ShareableList(name="currentOffers")
     offersSemaphore = sysv_ipc.Semaphore(semKey)
     offersSemaphore.acquire()
-    currentOffers[playerPID-1] = (os.getpid()).__str__() + ";0"
+    currentOffers[playerID-1] = (os.getpid()).__str__() + ";0"
     offersSemaphore.release()
 
     
@@ -188,10 +188,9 @@ def offeracepted(offer, traderPID):
 def handler(signum, frame):
     offersSemaphore = sysv_ipc.Semaphore(semKey)
     print("\n OH no game ended now i will die ")
-    time.sleep(2)
     mq.send(str(1).encode(), type = 2)
-    mq.receive(type = playerPID)
-    print("Message reçu")
+    winner = mq.receive(type = playerPID)
+    print("Player who won is player" + winner.decode())
     offersSemaphore.acquire()
     try:
         _ = shared_memory.ShareableList(["0;0","0;0","0;0"],name="currentOffers")

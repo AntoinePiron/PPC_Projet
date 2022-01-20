@@ -93,13 +93,15 @@ def sendCard():
 def TrackingCurrentOffers():
     global offers
     offers = shared_memory.ShareableList(name="currentOffers")
-    while True: 
-        print(list(offers))
-        winwait()
-        time.sleep(5)
+    winwait()
         
 def winwait():
     win, t = mq.receive(type = 1)
+    winner = win.decode()
+    offersSemaphore.acquire()
+    for i in range(len(list(offers))):
+        if winner == int(offers[i].partition(';')[0]):
+            winnerID = i +1
     print("Received win signal, sending termination signal")
     for pid in ListePid:
         os.kill(int(pid), signal.SIGHUP)
@@ -110,7 +112,7 @@ def winwait():
     offers.shm.close()
     offers.shm.unlink()
     for pid in ListePid:
-        mq.send(str(1).encode(), type = int(pid))
+        mq.send(str(winnerID).encode(), type = int(pid))
     
     print("Player all left, shutting down")
     os.kill(os.getpid(), signal.SIGKILL)
