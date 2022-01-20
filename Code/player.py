@@ -115,7 +115,6 @@ def TrackingCurrentOffers():
             offer= int(input("Choice the number of the offer you want to accept : "))  
             cardnumber = int(currentOffers[offer -1].partition(';')[2])
             tradePID = int(currentOffers[offer -1].partition(';')[0])
-            print(cardnumber + tradePID)     
             offeracepted(cardnumber, tradePID)
         if choice == 3: #J'ai testé ta méthode mais ça marche pas :(
             a = 0
@@ -189,8 +188,9 @@ def handler(signum, frame):
     offersSemaphore = sysv_ipc.Semaphore(semKey)
     print("\n OH no game ended now i will die ")
     mq.send(str(1).encode(), type = 2)
-    winner = mq.receive(type = playerPID)
-    print("Player who won is player" + winner.decode())
+    winner, t = mq.receive(type = playerPID)
+    print("someone did the winning")
+    print("Player who won is player" + str(winner.decode()))
     offersSemaphore.acquire()
     try:
         _ = shared_memory.ShareableList(["0;0","0;0","0;0"],name="currentOffers")

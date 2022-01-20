@@ -97,11 +97,13 @@ def TrackingCurrentOffers():
         
 def winwait():
     win, t = mq.receive(type = 1)
-    winner = win.decode()
+    winner = int(win.decode())
     offersSemaphore.acquire()
+    winnerID = 0
     for i in range(len(list(offers))):
         if winner == int(offers[i].partition(';')[0]):
             winnerID = i +1
+    offersSemaphore.release()
     print("Received win signal, sending termination signal")
     for pid in ListePid:
         os.kill(int(pid), signal.SIGHUP)
