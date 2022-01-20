@@ -20,7 +20,7 @@ class Hand:
     def __str__(self):
         outstr = ""
         for i in range(len(self.myHand)):
-            outstr += "Carte %s : %s | "%(i+1, cardType(self.myHand[i]).name)
+            outstr += "Carte %s : %s \n"%(i+1, cardType(self.myHand[i]).name)
         return outstr
     
     def getCard(self, index):
