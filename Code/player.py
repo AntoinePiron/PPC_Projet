@@ -4,17 +4,13 @@ import os
 import sysv_ipc
 from multiprocessing import shared_memory
 import signal
-import sys
-import time
 
 playerPID = os.getpid()
 key = 128 # Declaration of the key for the message queues
 debutkey = 100 #Could be passed to console args ?
 semKey = 256
+protectionKey = 512
 myHand = Hand([0,0,0,0,0])
-
-
-    
 
     #Handle the joining the server, and sending the process' pid
 def joinserver(pid):
@@ -90,6 +86,7 @@ def receiveHands():
 def TrackingCurrentOffers():
     currentOffers = shared_memory.ShareableList(name="currentOffers")
     offersSemaphore = sysv_ipc.Semaphore(semKey)
+    protectionSemaphore = sysv_ipc.Semaphore(protectionKey)
     pid = os.getpid()
     global playerID 
     playerID = 0
@@ -111,11 +108,14 @@ def TrackingCurrentOffers():
             offersSemaphore.release()
             offersent(offer)   
         if choice == 2:
+            print("Waiting for the end of the current exchange ...")
+            protectionSemaphore.acquire()
             print("The offers list is : %s"%(list(currentOffers)))
             offer= int(input("Choice the number of the offer you want to accept : "))  
             cardnumber = int(currentOffers[offer -1].partition(';')[2])
             tradePID = int(currentOffers[offer -1].partition(';')[0])
             offeracepted(cardnumber, tradePID)
+            protectionSemaphore.release()
         if choice == 3: #J'ai testé ta méthode mais ça marche pas :(
             a = 0
             for i in range(5):
@@ -151,7 +151,7 @@ def offersent(offer):
         HisHand.setCard(int(cardreceived.decode()), i)
     print("Hand received ! Adding it to your own hand")
     myHand.fuzeHands(HisHand.myHand)       
-    print("Your hand is now " +  myHand.__str__())
+    print("Your hand is now : \n" +  myHand.__str__())
     #On pense à remettre les offres à zérp 
     currentOffers = shared_memory.ShareableList(name="currentOffers")
     offersSemaphore = sysv_ipc.Semaphore(semKey)
@@ -182,7 +182,7 @@ def offeracepted(offer, traderPID):
                 myHand.setCard(0, card-1)
                 break 
     myHand.fuzeHands(HisHand.myHand)
-    print("Your hand is now " +  myHand.__str__())
+    print("Your hand is now : \n" +  myHand.__str__())
 
 def handler(signum, frame):
     offersSemaphore = sysv_ipc.Semaphore(semKey)

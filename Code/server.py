@@ -11,8 +11,9 @@ debutkey = 100 #Could be passed to console args ?
 
 semKey = 256
 #A semaphore used to protect the sharedMemory
-offersSemaphore = sysv_ipc.Semaphore(256, sysv_ipc.IPC_CREAT, initial_value = 1)
-
+offersSemaphore = sysv_ipc.Semaphore(semKey, sysv_ipc.IPC_CREAT, initial_value = 1)
+protectionKey = 512
+protectionSemaphore = sysv_ipc.Semaphore(protectionKey, sysv_ipc.IPC_CREAT, initial_value = 1)
 
 #Fonction qui permet de vider les messages queue encore pleine et de reset la shared memory
 def clearStart():
