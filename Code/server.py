@@ -37,7 +37,6 @@ def debutjeu():
         pid = connection.decode() #When a conncetion is detected, adds its pid to the list
         ListePid.append(pid)
         for i in range(len(ListePid)): #Sends a connection ack to every player
-            print(".")
             md.send(str(len(ListePid)).encode(), type = 2)
     #When there are more than 3 players, stops waiting for connections
     
@@ -69,6 +68,7 @@ def debutjeu():
             break
         
     print("Starting message queue deleted, game starting")
+    md.remove()
     print("Creating shared memory")
     try:
         _ = shared_memory.ShareableList(["0;0"] * len(ListePid),name="currentOffers")

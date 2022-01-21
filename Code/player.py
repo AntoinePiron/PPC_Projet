@@ -1,4 +1,5 @@
 import pickle
+from threading import currentThread
 from utils import *
 import os
 import sysv_ipc
@@ -82,6 +83,7 @@ def receiveHands():
 
 #Fonction qui bah est ton code pelo mdr
 def TrackingCurrentOffers():
+    global currentOffers
     currentOffers = shared_memory.ShareableList(name="currentOffers")
     offersSemaphore = sysv_ipc.Semaphore(semKey)
     protectionSemaphore = sysv_ipc.Semaphore(protectionKey)
@@ -99,16 +101,29 @@ def TrackingCurrentOffers():
     while True:       
         choice = checkInput(1,3,"Enter 1 to propose an offer, 2 to choose from an existing offer, 3 if you think you won ! : ")
         if choice == 1:
-            offer = checkInput(1,5,"Number of cards in [1,5]: ")
-            offersSemaphore.acquire()
-            currentOffers[playerID-1] = pid.__str__() + ";" + offer.__str__()
-            offersSemaphore.release()
-            offersent(offer)   
+            a = 0
+            for i in range(len(list(currentOffers))):
+                if int(currentOffers[i].partition(';')[2]) != 0:
+                    a = a + 1
+            if a < (len(list(currentOffers)) - 1):
+                offer = checkInput(1,5,"Number of cards in [1,5]: ")
+                offersSemaphore.acquire()
+                currentOffers[playerID-1] = pid.__str__() + ";" + offer.__str__()
+                offersSemaphore.release() 
+                print("You will now wait for someone to accept your offer")
+                for i in range(len(list(currentOffers))):
+                    if not i == playerID -1 and currentOffers[i].partition(';')[2] == 0 : #We send a signal to the ones that haven't already made an offer !
+                        os.kill(int(currentOffers[i].partition(';')[0]), signal.SIGURG)
+                offersent(offer)   
+            else:
+                    print("All the other player already made an offer, you cannot make one of your own")
+                   
         if choice == 2:
             print("Waiting for the end of the current exchange ...")
             protectionSemaphore.acquire()
-            print("The offers list is : %s"%(list(currentOffers)))
-            offer= int(input("Choice the number of the offer you want to accept : "))  
+            for i in range(len(list(currentOffers))):
+                print("Player " + str((i+1)) + " is willing to exchange " + currentOffers[i].partition(';')[2] + " cards")    
+            offer= int(input("Choose the id of the player whose offer you want to accept "))  
             cardnumber = int(currentOffers[offer -1].partition(';')[2])
             tradePID = int(currentOffers[offer -1].partition(';')[0])
             offeracepted(cardnumber, tradePID)
@@ -195,8 +210,15 @@ def handler(signum, frame):
 
     os.kill(playerPID, signal.SIGKILL)    
 
+def updateoffers(signum, frame):
+    print("\n Someone has made an offer, here are what players are now willing to exchange")
+    for i in range(len(list(currentOffers))):
+        print("Player " + str((i+1)) + " is willing to exchange " + currentOffers[i].partition(';')[2] + " cards")   
+    print("(Be careful, if you were about to input something, the input is still on !)") 
+           
 if __name__ == "__main__":
     signal.signal(signal.SIGHUP, handler)
+    signal.signal(signal.SIGURG, updateoffers)
     joinserver(playerPID)
     receiveHands()
     print(myHand.__str__())

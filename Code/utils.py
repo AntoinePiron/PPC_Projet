@@ -3,10 +3,12 @@ import random
 
 class cardType(enum.Enum):
     airplane = 1
-    car = 2
-    train = 3
-    bike = 4
-    shoes = 5
+    boat = 2
+    car = 3
+    train = 4
+    bike = 5
+    horse = 6
+    shoes = 7
 
 class Hand: 
     myHand = [0,0,0,0,0]
