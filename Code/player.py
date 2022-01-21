@@ -112,8 +112,9 @@ def TrackingCurrentOffers():
                 offersSemaphore.release() 
                 print("You will now wait for someone to accept your offer")
                 for i in range(len(list(currentOffers))):
-                    if not i == playerID -1 and currentOffers[i].partition(';')[2] == 0 : #We send a signal to the ones that haven't already made an offer !
+                    if (int(currentOffers[i].partition(';')[2]) == 0): #We send a signal to the ones that haven't already made an offer !
                         os.kill(int(currentOffers[i].partition(';')[0]), signal.SIGURG)
+                        
                 offersent(offer)   
             else:
                     print("All the other player already made an offer, you cannot make one of your own")
