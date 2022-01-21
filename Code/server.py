@@ -97,7 +97,7 @@ def TrackingCurrentOffers():
     winwait()
         
 def winwait():
-    win, t = mq.receive(type = 1)
+    win, _ = mq.receive(type = 1)
     winner = int(win.decode())
     offersSemaphore.acquire()
     winnerID = 0
@@ -111,7 +111,7 @@ def winwait():
         print("Sent signal to" + pid)
         
     for pid in ListePid:
-        end, t = mq.receive(type = 2)
+        _, _ = mq.receive(type = 2)
     offers.shm.close()
     offers.shm.unlink()
     for pid in ListePid:

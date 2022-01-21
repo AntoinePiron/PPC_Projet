@@ -69,9 +69,7 @@ def wait(value, md):
             value = int(waiting.decode()) 
             print("New connection detected")
             print("There are now " + str(value) + " players connected")
-            continue
-        
-        
+            continue      
 
 def receiveHands():
     print("Receiving hand ...")
@@ -97,8 +95,7 @@ def TrackingCurrentOffers():
             currentOffers[i] = pid.__str__() + ";0" 
             print("Your player id is " + str(playerID) + " for this game")
         offersSemaphore.release()
-  
-    
+      
     while True:       
         choice = checkInput(1,3,"Enter 1 to propose an offer, 2 to choose from an existing offer, 3 if you think you won ! : ")
         if choice == 1:
@@ -126,9 +123,6 @@ def TrackingCurrentOffers():
             else:
                 print("Your hand is not a winning Hand")
             
-                
-
-
 def offersent(offer):
     mq = sysv_ipc.MessageQueue(key) #Joining main message queue
     HisHand = Hand([0] * 5)
@@ -188,7 +182,7 @@ def handler(signum, frame):
     offersSemaphore = sysv_ipc.Semaphore(semKey)
     print("\n OH no game ended now i will die ")
     mq.send(str(1).encode(), type = 2)
-    winner, t = mq.receive(type = playerPID)
+    winner, _ = mq.receive(type = playerPID)
     print("someone did the winning")
     print("Player who won is player" + str(winner.decode()))
     offersSemaphore.acquire()
@@ -200,7 +194,6 @@ def handler(signum, frame):
     offersSemaphore.release()
 
     os.kill(playerPID, signal.SIGKILL)    
-    
 
 if __name__ == "__main__":
     signal.signal(signal.SIGHUP, handler)
